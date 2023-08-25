@@ -18,4 +18,4 @@ dependencies = [
     "setproctitle",
 ]
 [project.urls]
-"Homepage" = "dev.to"
+"Homepage" = "https://github.com/cwgem/pex_web_example"
