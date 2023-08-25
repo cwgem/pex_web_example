@@ -1,0 +1,18 @@
+FROM python:3.11.4-bullseye as deps
+RUN mkdir -p /home/gunicorn/app
+COPY web_pex.pex /home/gunicorn/
+RUN PEX_TOOLS=1 /usr/local/bin/python3.11 /home/gunicorn/web_pex.pex venv --scope=deps --compile /home/gunicorn/app
+
+FROM python:3.11.4-bullseye as srcs
+RUN mkdir -p /home/gunicorn/app
+COPY web_pex.pex /home/gunicorn
+COPY config/gunicorn.config.py /home/gunicorn/app
+RUN PEX_TOOLS=1 /usr/local/bin/python3.11 /home/gunicorn/web_pex.pex venv --scope=srcs --compile /home/gunicorn/app
+
+FROM python:3.11.4-bullseye
+RUN useradd -d /home/gunicorn -r -m -U -s /bin/bash gunicorn
+COPY --from=deps --chown=gunicorn:gunicorn /home/gunicorn/app /home/gunicorn/app
+COPY --from=srcs --chown=gunicorn:gunicorn /home/gunicorn/app /home/gunicorn/app
+USER gunicorn
+ENTRYPOINT /home/gunicorn/app/pex
+EXPOSE 8000
