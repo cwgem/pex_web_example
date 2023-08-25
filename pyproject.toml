@@ -15,6 +15,7 @@ classifiers = [
 dependencies = [
     "flask",
     "gunicorn",
+    "setproctitle",
 ]
 [project.urls]
 "Homepage" = "dev.to"
